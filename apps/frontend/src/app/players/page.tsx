@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { Users, Search, Filter } from "lucide-react";
 import {
   Card,
@@ -119,38 +120,39 @@ const PlayersPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {players.map((player) => (
-            <Card
-              key={player.id}
-              className="hover:shadow-md transition-shadow cursor-pointer"
-            >
-              <CardHeader>
-                <CardTitle className="text-lg">{player.name}</CardTitle>
-                <CardDescription>
-                  {player.gender === "male" ? "👨" : "👩"} {player.ageGroup} •
-                  Age {player.age}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      Date of Birth:
-                    </span>
-                    <span>{formatDate(player.dateOfBirth)}</span>
+            <Link key={player.id} href={`/players/${player.id}`}>
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="text-lg text-rowad-600">
+                    {player.name}
+                  </CardTitle>
+                  <CardDescription>
+                    {player.gender === "male" ? "👨" : "👩"} {player.ageGroup} •
+                    Age {player.age}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Date of Birth:
+                      </span>
+                      <span>{formatDate(player.dateOfBirth)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Gender:</span>
+                      <span className="capitalize">{player.gender}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Age Group:</span>
+                      <span className="font-medium text-speedball-600">
+                        {player.ageGroup}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Gender:</span>
-                    <span className="capitalize">{player.gender}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Age Group:</span>
-                    <span className="font-medium text-speedball-600">
-                      {player.ageGroup}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       )}

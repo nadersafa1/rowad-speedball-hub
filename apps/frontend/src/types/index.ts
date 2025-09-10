@@ -34,7 +34,7 @@ export type TestResult = {
 };
 
 export type PlayerWithResults = Player & {
-  testResults?: TestResult[];
+  testResults?: (TestResult & { test?: Test })[];
 };
 
 export type TestWithResults = Test & {

@@ -170,14 +170,19 @@ app.get('/api/players/:id', async (req, res) => {
     }
 
     const playerResults = await db
-      .select()
+      .select({
+        result: testResults,
+        test: tests,
+      })
       .from(testResults)
+      .leftJoin(tests, eq(testResults.testId, tests.id))
       .where(eq(testResults.playerId, id))
       .orderBy(desc(testResults.createdAt));
 
-    const resultsWithTotal = playerResults.map(result => ({
-      ...result,
-      totalScore: calculateTotalScore(result),
+    const resultsWithTotal = playerResults.map(row => ({
+      ...row.result,
+      totalScore: calculateTotalScore(row.result),
+      test: row.test,
     }));
 
     const playerWithAge = {
@@ -213,6 +218,7 @@ app.get('/api/tests', async (req, res) => {
 app.get('/api/tests/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    const { includeResults } = req.query;
     
     const test = await db
       .select()
@@ -224,7 +230,36 @@ app.get('/api/tests/:id', async (req, res) => {
       return res.status(404).json({ message: 'Test not found' });
     }
 
-    res.status(200).json(test[0]);
+    if (includeResults === 'true') {
+      const testResultsWithPlayers = await db
+        .select({
+          result: testResults,
+          player: players,
+        })
+        .from(testResults)
+        .leftJoin(players, eq(testResults.playerId, players.id))
+        .where(eq(testResults.testId, id))
+        .orderBy(desc(testResults.createdAt));
+
+      const resultsWithAge = testResultsWithPlayers.map(row => ({
+        ...row.result,
+        totalScore: calculateTotalScore(row.result),
+        player: row.player ? {
+          ...row.player,
+          age: calculateAge(row.player.dateOfBirth),
+          ageGroup: getAgeGroup(row.player.dateOfBirth),
+        } : null,
+      }));
+
+      const testWithResults = {
+        ...test[0],
+        testResults: resultsWithAge,
+      };
+
+      res.status(200).json(testWithResults);
+    } else {
+      res.status(200).json(test[0]);
+    }
   } catch (error) {
     console.error('Error fetching test:', error);
     res.status(500).json({ message: 'Internal server error' });
