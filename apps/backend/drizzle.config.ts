@@ -10,5 +10,7 @@ export default {
   dbCredentials: {
     connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/speedball_hub',
   },
+  verbose: true,
+  strict: true,
 } satisfies Config;
 

@@ -2,52 +2,39 @@
 
 A comprehensive web application for managing speedball sport data, specifically designed for Rowad club. The platform tracks players, manages test results, and provides analytics for the speedball solo event across different age groups and performance metrics.
 
-## 🚀 Quick Start
+## 🚀 One-Command Setup
 
-### Prerequisites
+```bash
+git clone <repository-url>
+cd rowad-speedball-hub
+npm run setup
+```
 
-- Node.js (≥18.0.0)
-- npm (≥9.0.0)
-- Docker & Docker Compose (for containerized development)
-- PostgreSQL (if running locally without Docker)
+**That's it!** This will:
+- ✅ Build and start all containers  
+- ✅ Set up the database with migrations
+- ✅ Seed realistic test data (25 players, 8 tests, 96 results)
+- ✅ Start the development environment
 
-### Development Setup
+### Access Points
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000  
+- **PgAdmin**: http://localhost:8080 (admin@rowad.com / admin123)
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd rowad-speedball-hub
-   ```
+## 🛠️ Manual Commands (Optional)
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+If you prefer step-by-step setup:
 
-3. **Set up environment variables**
-   ```bash
-   cp env.example .env
-   # Edit .env with your configuration
-   ```
+```bash
+# Start containers only
+npm run docker:dev
 
-4. **Start development with Docker (Recommended)**
-   ```bash
-   npm run docker:dev
-   ```
-   This will start:
-   - Frontend: http://localhost:3000
-   - Backend: http://localhost:8000
-   - Database: PostgreSQL on port 5432
-   - PgAdmin: http://localhost:8080
+# Set up database with seed data (run after containers are up)
+npm run db:setup
 
-5. **Or start development locally**
-   ```bash
-   # Make sure PostgreSQL is running locally
-   npm run dev
-   ```
-
-6. **Run database migrations**
-   ```bash
+# Individual database commands
+npm run db:migrate  # Run migrations only
+npm run db:seed     # Seed data only
    npm run db:generate
    npm run db:migrate
    ```

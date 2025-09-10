@@ -17,7 +17,7 @@ RUN npm run build --workspace=frontend
 RUN npm run build --workspace=backend
 
 # Expose ports
-EXPOSE 3000 5000
+EXPOSE 3000 8000
 
 # Start both frontend and backend in development mode
 CMD ["npm", "run", "dev"]
