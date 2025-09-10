@@ -41,11 +41,11 @@ export const getAgeGroup = (dateOfBirth: string): string => {
 export const getTestTypeLabel = (testType: string): string => {
   switch (testType) {
     case '60_30':
-      return 'Type A (60s/30s)';
+      return 'Super Solo (60s/30s)';
     case '30_30':
-      return 'Type B (30s/30s)';
+      return 'Juniors Solo (30s/30s)';
     case '30_60':
-      return 'Type C (30s/60s)';
+      return 'Speed Solo (30s/60s)';
     default:
       return testType;
   }

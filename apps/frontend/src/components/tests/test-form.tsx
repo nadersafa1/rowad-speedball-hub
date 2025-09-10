@@ -90,11 +90,11 @@ const TestForm = ({ test, onSuccess, onCancel }: TestFormProps) => {
   const getTestTypeLabel = (type: string) => {
     switch (type) {
       case "60_30":
-        return "Type A (60s Play / 30s Rest)";
+        return "Super Solo (60s Play / 30s Rest)";
       case "30_30":
-        return "Type B (30s Play / 30s Rest)";
+        return "Juniors Solo (30s Play / 30s Rest)";
       case "30_60":
-        return "Type C (30s Play / 60s Rest)";
+        return "Speed Solo (30s Play / 60s Rest)";
       default:
         return type;
     }
@@ -147,17 +147,17 @@ const TestForm = ({ test, onSuccess, onCancel }: TestFormProps) => {
                       {[
                         {
                           value: "60_30",
-                          label: "Type A",
+                          label: "Super Solo",
                           desc: "60 seconds play, 30 seconds rest",
                         },
                         {
                           value: "30_30",
-                          label: "Type B",
+                          label: "Juniors Solo",
                           desc: "30 seconds play, 30 seconds rest",
                         },
                         {
                           value: "30_60",
-                          label: "Type C",
+                          label: "Speed Solo",
                           desc: "30 seconds play, 60 seconds rest",
                         },
                       ].map((option) => (

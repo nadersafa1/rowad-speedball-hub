@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, Search, Filter } from "lucide-react";
+import { Users, Search, Filter, Plus } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -12,10 +12,14 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { usePlayersStore } from "@/store/players-store";
+import { useAuthStore } from "@/store/auth-store";
 import { calculateAge, getAgeGroup, formatDate } from "@/lib/utils";
+import PlayerForm from "@/components/players/player-form";
 
 const PlayersPage = () => {
+  const { user } = useAuthStore();
   const {
     players,
     isLoading,
@@ -25,6 +29,8 @@ const PlayersPage = () => {
     setFilters,
     clearError,
   } = usePlayersStore();
+
+  const [playerFormOpen, setPlayerFormOpen] = useState(false);
 
   useEffect(() => {
     fetchPlayers();
@@ -62,6 +68,27 @@ const PlayersPage = () => {
             Browse and manage all registered players
           </p>
         </div>
+
+        {/* Admin Add Player Button */}
+        {user && (
+          <Dialog open={playerFormOpen} onOpenChange={setPlayerFormOpen}>
+            <DialogTrigger asChild>
+              <Button className="gap-2 bg-rowad-600 hover:bg-rowad-700">
+                <Plus className="h-4 w-4" />
+                Add Player
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-2xl">
+              <PlayerForm
+                onSuccess={() => {
+                  setPlayerFormOpen(false);
+                  fetchPlayers();
+                }}
+                onCancel={() => setPlayerFormOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       {/* Filters */}
@@ -73,7 +100,8 @@ const PlayersPage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4">
+          <div className="space-y-4">
+            {/* Search */}
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -83,6 +111,44 @@ const PlayersPage = () => {
                   onChange={(e) => handleSearchChange(e.target.value)}
                   className="pl-10"
                 />
+              </div>
+            </div>
+
+            {/* Gender and Age Group Filters */}
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Gender
+                </label>
+                <select
+                  value={filters.gender}
+                  onChange={(e) => setFilters({ gender: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rowad-500 focus:border-transparent"
+                >
+                  <option value="">All Genders</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+              </div>
+
+              <div className="flex-1">
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Age Group
+                </label>
+                <select
+                  value={filters.ageGroup}
+                  onChange={(e) => setFilters({ ageGroup: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rowad-500 focus:border-transparent"
+                >
+                  <option value="">All Age Groups</option>
+                  <option value="U10">U10</option>
+                  <option value="U12">U12</option>
+                  <option value="U14">U14</option>
+                  <option value="U16">U16</option>
+                  <option value="U18">U18</option>
+                  <option value="U21">U21</option>
+                  <option value="Senior">Senior</option>
+                </select>
               </div>
             </div>
           </div>

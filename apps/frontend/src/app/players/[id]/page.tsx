@@ -10,6 +10,7 @@ import {
   MapPin,
   Trophy,
   BarChart3,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,12 +20,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { usePlayersStore } from "@/store/players-store";
+import { useAuthStore } from "@/store/auth-store";
+import ResultsForm from "@/components/results/results-form";
 
 const PlayerDetailPage = () => {
   const params = useParams();
   const playerId = params.id as string;
+  const { user } = useAuthStore();
   const { selectedPlayer, fetchPlayer, isLoading } = usePlayersStore();
+  const [resultFormOpen, setResultFormOpen] = useState(false);
 
   useEffect(() => {
     if (playerId) {
@@ -149,10 +155,36 @@ const PlayerDetailPage = () => {
       {/* Test Results History */}
       <Card>
         <CardHeader>
-          <CardTitle>Test Results History</CardTitle>
-          <CardDescription>
-            Complete performance history for this player
-          </CardDescription>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle>Test Results History</CardTitle>
+              <CardDescription>
+                Complete performance history for this player
+              </CardDescription>
+            </div>
+
+            {/* Admin Add Result Button */}
+            {user && (
+              <Dialog open={resultFormOpen} onOpenChange={setResultFormOpen}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2 bg-green-600 hover:bg-green-700">
+                    <Plus className="h-4 w-4" />
+                    Add Result
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-2xl">
+                  <ResultsForm
+                    preselectedPlayerId={playerId}
+                    onSuccess={() => {
+                      setResultFormOpen(false);
+                      fetchPlayer(playerId);
+                    }}
+                    onCancel={() => setResultFormOpen(false)}
+                  />
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {selectedPlayer.testResults &&

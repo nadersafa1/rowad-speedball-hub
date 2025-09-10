@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Trophy, Calendar, Filter, Clock } from "lucide-react";
+import { Trophy, Calendar, Filter, Clock, Plus } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -11,10 +11,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useTestsStore } from "@/store/tests-store";
+import { useAuthStore } from "@/store/auth-store";
 import { formatDate, getTestTypeLabel } from "@/lib/utils";
+import TestForm from "@/components/tests/test-form";
 
 const TestsPage = () => {
+  const { user } = useAuthStore();
   const {
     tests,
     isLoading,
@@ -24,6 +28,8 @@ const TestsPage = () => {
     setFilters,
     clearError,
   } = useTestsStore();
+
+  const [testFormOpen, setTestFormOpen] = useState(false);
 
   useEffect(() => {
     fetchTests();
@@ -70,6 +76,27 @@ const TestsPage = () => {
             Browse and manage all conducted speedball tests
           </p>
         </div>
+
+        {/* Admin Add Test Button */}
+        {user && (
+          <Dialog open={testFormOpen} onOpenChange={setTestFormOpen}>
+            <DialogTrigger asChild>
+              <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
+                <Plus className="h-4 w-4" />
+                Add Test
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-2xl">
+              <TestForm
+                onSuccess={() => {
+                  setTestFormOpen(false);
+                  fetchTests();
+                }}
+                onCancel={() => setTestFormOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       {/* Test Type Filter */}
@@ -94,21 +121,21 @@ const TestsPage = () => {
               size="sm"
               onClick={() => setFilters({ testType: "60_30" })}
             >
-              Type A (60s/30s)
+              Super Solo (60s/30s)
             </Button>
             <Button
               variant={filters.testType === "30_30" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilters({ testType: "30_30" })}
             >
-              Type B (30s/30s)
+              Juniors Solo (30s/30s)
             </Button>
             <Button
               variant={filters.testType === "30_60" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilters({ testType: "30_60" })}
             >
-              Type C (30s/60s)
+              Speed Solo (30s/60s)
             </Button>
           </div>
         </CardContent>
@@ -202,7 +229,7 @@ const TestsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 border rounded-lg">
               <div className="bg-red-100 text-red-800 px-3 py-1 rounded-md text-sm font-medium mb-2 inline-block">
-                Type A
+                Super Solo
               </div>
               <h4 className="font-semibold">60s Play / 30s Rest</h4>
               <p className="text-sm text-muted-foreground mt-1">
@@ -211,7 +238,7 @@ const TestsPage = () => {
             </div>
             <div className="text-center p-4 border rounded-lg">
               <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm font-medium mb-2 inline-block">
-                Type B
+                Juniors Solo
               </div>
               <h4 className="font-semibold">30s Play / 30s Rest</h4>
               <p className="text-sm text-muted-foreground mt-1">
@@ -220,7 +247,7 @@ const TestsPage = () => {
             </div>
             <div className="text-center p-4 border rounded-lg">
               <div className="bg-green-100 text-green-800 px-3 py-1 rounded-md text-sm font-medium mb-2 inline-block">
-                Type C
+                Speed Solo
               </div>
               <h4 className="font-semibold">30s Play / 60s Rest</h4>
               <p className="text-sm text-muted-foreground mt-1">
@@ -244,19 +271,19 @@ const TestsPage = () => {
                 <p className="text-2xl font-bold">
                   {tests.filter((t) => t.testType === "60_30").length}
                 </p>
-                <p className="text-muted-foreground text-sm">Type A</p>
+                <p className="text-muted-foreground text-sm">Super Solo</p>
               </div>
               <div>
                 <p className="text-2xl font-bold">
                   {tests.filter((t) => t.testType === "30_30").length}
                 </p>
-                <p className="text-muted-foreground text-sm">Type B</p>
+                <p className="text-muted-foreground text-sm">Juniors Solo</p>
               </div>
               <div>
                 <p className="text-2xl font-bold">
                   {tests.filter((t) => t.testType === "30_60").length}
                 </p>
-                <p className="text-muted-foreground text-sm">Type C</p>
+                <p className="text-muted-foreground text-sm">Speed Solo</p>
               </div>
             </div>
           </CardContent>

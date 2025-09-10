@@ -8,7 +8,7 @@ import { config } from 'dotenv';
 import bcrypt from 'bcryptjs';
 import { db } from './db/connection';
 import { players, tests, testResults, calculateAge, getAgeGroup, calculateTotalScore } from './db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and, like, gte, lte } from 'drizzle-orm';
 
 // Load environment variables
 config();
@@ -31,18 +31,20 @@ app.use(helmet({
 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://rowad.speedballhub.com', 'http://localhost:3000']
+    ? ['https://rowad.speedballhub.com', 'http://localhost:3000','http://rowad.speedballhub.com']
     : ['http://localhost:3000'],
   credentials: true,
 }));
 
 app.use(compression());
 
-// Rate limiting
+// Rate limiting - more permissive for development
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 1 * 60 * 1000, // 1 minute window
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // 1000 requests per minute in dev, 100 in prod
   message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 app.use('/api/', limiter);
 
@@ -136,9 +138,32 @@ app.get('/api/auth/verify', (req, res) => {
 // Players routes
 app.get('/api/players', async (req, res) => {
   try {
-    const result = await db
-      .select()
-      .from(players)
+    const { search, gender, ageGroup } = req.query;
+    
+    let query = db.select().from(players);
+    
+    // Apply filters
+    const conditions = [];
+    
+    if (search) {
+      conditions.push(
+        like(players.name, `%${search}%`)
+      );
+    }
+    
+    if (gender) {
+      conditions.push(eq(players.gender, gender as string));
+    }
+    
+    // Apply conditions if any exist
+    if (conditions.length > 0) {
+      const combinedCondition = conditions.reduce((acc, condition) => 
+        acc ? and(acc, condition) : condition
+      );
+      query = query.where(combinedCondition);
+    }
+    
+    const result = await query
       .orderBy(desc(players.createdAt))
       .limit(50);
 
@@ -148,7 +173,13 @@ app.get('/api/players', async (req, res) => {
       ageGroup: getAgeGroup(player.dateOfBirth),
     }));
 
-    res.status(200).json(playersWithAge);
+    // Filter by age group after calculation if specified
+    let filteredPlayers = playersWithAge;
+    if (ageGroup) {
+      filteredPlayers = playersWithAge.filter(player => player.ageGroup === ageGroup);
+    }
+
+    res.status(200).json(filteredPlayers);
   } catch (error) {
     console.error('Error fetching players:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -202,9 +233,34 @@ app.get('/api/players/:id', async (req, res) => {
 // Tests routes
 app.get('/api/tests', async (req, res) => {
   try {
-    const result = await db
-      .select()
-      .from(tests)
+    const { testType, dateFrom, dateTo } = req.query;
+    
+    let query = db.select().from(tests);
+    
+    // Apply filters
+    const conditions = [];
+    
+    if (testType) {
+      conditions.push(eq(tests.testType, testType as string));
+    }
+    
+    if (dateFrom) {
+      conditions.push(gte(tests.dateConducted, new Date(dateFrom as string)));
+    }
+    
+    if (dateTo) {
+      conditions.push(lte(tests.dateConducted, new Date(dateTo as string)));
+    }
+    
+    // Apply conditions if any exist
+    if (conditions.length > 0) {
+      const combinedCondition = conditions.reduce((acc, condition) => 
+        acc ? and(acc, condition) : condition
+      );
+      query = query.where(combinedCondition);
+    }
+    
+    const result = await query
       .orderBy(desc(tests.dateConducted))
       .limit(50);
 

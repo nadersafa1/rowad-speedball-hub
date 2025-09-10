@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -84,10 +84,14 @@ const ResultsForm = ({
     },
   });
 
+  // Only fetch if data is completely empty (first time load)
   useEffect(() => {
-    fetchPlayers();
-    fetchTests();
-  }, [fetchPlayers, fetchTests]);
+    if (players.length === 0 && tests.length === 0) {
+      // Both stores are empty, likely first load
+      fetchPlayers();
+      fetchTests();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = async (data: ResultFormData) => {
     setIsLoading(true);
@@ -108,20 +112,25 @@ const ResultsForm = ({
     }
   };
 
-  const watchedScores = form.watch([
-    "leftHandScore",
-    "rightHandScore",
-    "forehandScore",
-    "backhandScore",
-  ]);
+  // Use individual watches to minimize re-renders
+  const leftHandScore = form.watch("leftHandScore") || 0;
+  const rightHandScore = form.watch("rightHandScore") || 0;
+  const forehandScore = form.watch("forehandScore") || 0;
+  const backhandScore = form.watch("backhandScore") || 0;
+  const playerId = form.watch("playerId");
+  const testId = form.watch("testId");
 
-  const totalScore = watchedScores.reduce(
-    (sum, score) => sum + (score || 0),
-    0
-  );
+  const totalScore =
+    leftHandScore + rightHandScore + forehandScore + backhandScore;
 
-  const selectedPlayer = players.find((p) => p.id === form.watch("playerId"));
-  const selectedTest = tests.find((t) => t.id === form.watch("testId"));
+  // Memoize selections to prevent unnecessary re-renders
+  const selectedPlayer = useCallback(() => {
+    return players.find((p) => p.id === playerId);
+  }, [players, playerId])();
+
+  const selectedTest = useCallback(() => {
+    return tests.find((t) => t.id === testId);
+  }, [tests, testId])();
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -191,10 +200,10 @@ const ResultsForm = ({
                         <option key={test.id} value={test.id}>
                           {test.name} (
                           {test.testType === "60_30"
-                            ? "Type A"
+                            ? "Super Solo"
                             : test.testType === "30_30"
-                            ? "Type B"
-                            : "Type C"}
+                            ? "Juniors Solo"
+                            : "Speed Solo"}
                           )
                         </option>
                       ))}
@@ -209,10 +218,10 @@ const ResultsForm = ({
                       ).toLocaleDateString()}{" "}
                       • Type:{" "}
                       {selectedTest.testType === "60_30"
-                        ? "Type A (60s/30s)"
+                        ? "Super Solo (60s/30s)"
                         : selectedTest.testType === "30_30"
-                        ? "Type B (30s/30s)"
-                        : "Type C (30s/60s)"}
+                        ? "Juniors Solo (30s/30s)"
+                        : "Speed Solo (30s/60s)"}
                     </div>
                   )}
                 </FormItem>
@@ -329,7 +338,8 @@ const ResultsForm = ({
                 </span>
               </div>
               <div className="text-sm text-gray-600 mt-1">
-                Individual scores: {watchedScores.join(" + ")} = {totalScore}
+                Individual scores: {leftHandScore} + {rightHandScore} +{" "}
+                {forehandScore} + {backhandScore} = {totalScore}
               </div>
             </div>
 

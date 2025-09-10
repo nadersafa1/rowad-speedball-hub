@@ -10,6 +10,7 @@ import {
   Users,
   Filter,
   Clock,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,12 +20,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useTestsStore } from "@/store/tests-store";
+import { useAuthStore } from "@/store/auth-store";
+import ResultsForm from "@/components/results/results-form";
 
 const TestDetailPage = () => {
   const params = useParams();
   const testId = params.id as string;
+  const { user } = useAuthStore();
   const { selectedTest, fetchTest, isLoading } = useTestsStore();
+  const [resultFormOpen, setResultFormOpen] = useState(false);
   const [filters, setFilters] = useState({
     ageGroup: "",
     gender: "",
@@ -276,12 +282,38 @@ const TestDetailPage = () => {
         {/* All Results */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              Test Results ({filteredResults.length} participants)
-            </CardTitle>
-            <CardDescription>
-              Individual results sorted by total score
-            </CardDescription>
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle>
+                  Test Results ({filteredResults.length} participants)
+                </CardTitle>
+                <CardDescription>
+                  Individual results sorted by total score
+                </CardDescription>
+              </div>
+
+              {/* Admin Add Result Button */}
+              {user && (
+                <Dialog open={resultFormOpen} onOpenChange={setResultFormOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="gap-2 bg-green-600 hover:bg-green-700">
+                      <Plus className="h-4 w-4" />
+                      Add Result
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-2xl">
+                    <ResultsForm
+                      preselectedTestId={testId}
+                      onSuccess={() => {
+                        setResultFormOpen(false);
+                        fetchTest(testId, true);
+                      }}
+                      onCancel={() => setResultFormOpen(false)}
+                    />
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             {filteredResults.length > 0 ? (
