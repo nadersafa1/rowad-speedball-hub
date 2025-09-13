@@ -8,19 +8,13 @@ interface TestsState {
   selectedTest: TestWithResults | null;
   isLoading: boolean;
   error: string | null;
-  filters: {
-    testType: string;
-    dateFrom: string;
-    dateTo: string;
-  };
 
   // Actions
-  fetchTests: () => Promise<void>;
+  fetchTests: (filters?: { testType?: string; dateFrom?: string; dateTo?: string }) => Promise<void>;
   fetchTest: (id: string, includeResults?: boolean) => Promise<void>;
   createTest: (data: any) => Promise<void>;
   updateTest: (id: string, data: any) => Promise<void>;
   deleteTest: (id: string) => Promise<void>;
-  setFilters: (filters: Partial<TestsState['filters']>) => void;
   clearError: () => void;
   clearSelectedTest: () => void;
 }
@@ -30,16 +24,10 @@ export const useTestsStore = create<TestsState>((set, get) => ({
   selectedTest: null,
   isLoading: false,
   error: null,
-  filters: {
-    testType: '',
-    dateFrom: '',
-    dateTo: '',
-  },
 
-  fetchTests: async () => {
+  fetchTests: async (filters = {}) => {
     set({ isLoading: true, error: null });
     try {
-      const filters = get().filters;
       const params = {
         testType: filters.testType as any || undefined,
         dateFrom: filters.dateFrom || undefined,
@@ -120,14 +108,6 @@ export const useTestsStore = create<TestsState>((set, get) => ({
       });
       throw error;
     }
-  },
-
-  setFilters: (newFilters) => {
-    set(state => ({ 
-      filters: { ...state.filters, ...newFilters } 
-    }));
-    // Auto-fetch when filters change
-    setTimeout(() => get().fetchTests(), 0);
   },
 
   clearError: () => set({ error: null }),

@@ -20,24 +20,30 @@ import PlayerForm from "@/components/players/player-form";
 
 const PlayersPage = () => {
   const { user } = useAuthStore();
-  const {
-    players,
-    isLoading,
-    error,
-    filters,
-    fetchPlayers,
-    setFilters,
-    clearError,
-  } = usePlayersStore();
+  const { players, isLoading, error, fetchPlayers, clearError } =
+    usePlayersStore();
 
   const [playerFormOpen, setPlayerFormOpen] = useState(false);
 
+  // Local filter state
+  const [filters, setFilters] = useState({
+    search: "",
+    gender: "",
+    ageGroup: "",
+  });
+
+  // Initial fetch
   useEffect(() => {
     fetchPlayers();
   }, [fetchPlayers]);
 
+  // Fetch when filters change
+  useEffect(() => {
+    fetchPlayers(filters);
+  }, [filters, fetchPlayers]);
+
   const handleSearchChange = (value: string) => {
-    setFilters({ search: value });
+    setFilters((prev) => ({ ...prev, search: value }));
   };
 
   if (error) {
@@ -122,7 +128,9 @@ const PlayersPage = () => {
                 </label>
                 <select
                   value={filters.gender}
-                  onChange={(e) => setFilters({ gender: e.target.value })}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, gender: e.target.value }))
+                  }
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rowad-500 focus:border-transparent"
                 >
                   <option value="">All Genders</option>
@@ -137,7 +145,12 @@ const PlayersPage = () => {
                 </label>
                 <select
                   value={filters.ageGroup}
-                  onChange={(e) => setFilters({ ageGroup: e.target.value })}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      ageGroup: e.target.value,
+                    }))
+                  }
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rowad-500 focus:border-transparent"
                 >
                   <option value="">All Age Groups</option>

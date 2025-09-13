@@ -143,7 +143,7 @@ app.get('/api/players', async (req, res) => {
     let query = db.select().from(players);
     
     // Apply filters
-    const conditions = [];
+    const conditions: any[] = [];
     
     if (search) {
       conditions.push(
@@ -151,8 +151,8 @@ app.get('/api/players', async (req, res) => {
       );
     }
     
-    if (gender) {
-      conditions.push(eq(players.gender, gender as string));
+    if (gender && (gender === 'male' || gender === 'female')) {
+      conditions.push(eq(players.gender, gender));
     }
     
     // Apply conditions if any exist
@@ -160,7 +160,7 @@ app.get('/api/players', async (req, res) => {
       const combinedCondition = conditions.reduce((acc, condition) => 
         acc ? and(acc, condition) : condition
       );
-      query = query.where(combinedCondition);
+      query = query.where(combinedCondition) as any;
     }
     
     const result = await query
@@ -238,18 +238,18 @@ app.get('/api/tests', async (req, res) => {
     let query = db.select().from(tests);
     
     // Apply filters
-    const conditions = [];
+    const conditions: any[] = [];
     
-    if (testType) {
-      conditions.push(eq(tests.testType, testType as string));
+    if (testType && (testType === '60_30' || testType === '30_30' || testType === '30_60')) {
+      conditions.push(eq(tests.testType, testType));
     }
     
     if (dateFrom) {
-      conditions.push(gte(tests.dateConducted, new Date(dateFrom as string)));
+      conditions.push(gte(tests.dateConducted, dateFrom as string));
     }
     
     if (dateTo) {
-      conditions.push(lte(tests.dateConducted, new Date(dateTo as string)));
+      conditions.push(lte(tests.dateConducted, dateTo as string));
     }
     
     // Apply conditions if any exist
@@ -257,7 +257,7 @@ app.get('/api/tests', async (req, res) => {
       const combinedCondition = conditions.reduce((acc, condition) => 
         acc ? and(acc, condition) : condition
       );
-      query = query.where(combinedCondition);
+      query = query.where(combinedCondition) as any;
     }
     
     const result = await query

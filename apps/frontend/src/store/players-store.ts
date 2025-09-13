@@ -8,19 +8,13 @@ interface PlayersState {
   selectedPlayer: PlayerWithResults | null;
   isLoading: boolean;
   error: string | null;
-  filters: {
-    search: string;
-    gender: string;
-    ageGroup: string;
-  };
 
   // Actions
-  fetchPlayers: () => Promise<void>;
+  fetchPlayers: (filters?: { search?: string; gender?: string; ageGroup?: string }) => Promise<void>;
   fetchPlayer: (id: string) => Promise<void>;
   createPlayer: (data: any) => Promise<void>;
   updatePlayer: (id: string, data: any) => Promise<void>;
   deletePlayer: (id: string) => Promise<void>;
-  setFilters: (filters: Partial<PlayersState['filters']>) => void;
   clearError: () => void;
   clearSelectedPlayer: () => void;
 }
@@ -30,16 +24,10 @@ export const usePlayersStore = create<PlayersState>((set, get) => ({
   selectedPlayer: null,
   isLoading: false,
   error: null,
-  filters: {
-    search: '',
-    gender: '',
-    ageGroup: '',
-  },
 
-  fetchPlayers: async () => {
+  fetchPlayers: async (filters = {}) => {
     set({ isLoading: true, error: null });
     try {
-      const filters = get().filters;
       const params = {
         search: filters.search || undefined,
         gender: filters.gender as any || undefined,
@@ -120,14 +108,6 @@ export const usePlayersStore = create<PlayersState>((set, get) => ({
       });
       throw error;
     }
-  },
-
-  setFilters: (newFilters) => {
-    set(state => ({ 
-      filters: { ...state.filters, ...newFilters } 
-    }));
-    // Auto-fetch when filters change
-    setTimeout(() => get().fetchPlayers(), 0);
   },
 
   clearError: () => set({ error: null }),

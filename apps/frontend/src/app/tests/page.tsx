@@ -19,21 +19,26 @@ import TestForm from "@/components/tests/test-form";
 
 const TestsPage = () => {
   const { user } = useAuthStore();
-  const {
-    tests,
-    isLoading,
-    error,
-    filters,
-    fetchTests,
-    setFilters,
-    clearError,
-  } = useTestsStore();
+  const { tests, isLoading, error, fetchTests, clearError } = useTestsStore();
 
   const [testFormOpen, setTestFormOpen] = useState(false);
 
+  // Local filter state
+  const [filters, setFilters] = useState({
+    testType: "",
+    dateFrom: "",
+    dateTo: "",
+  });
+
+  // Initial fetch
   useEffect(() => {
     fetchTests();
   }, [fetchTests]);
+
+  // Fetch when filters change
+  useEffect(() => {
+    fetchTests(filters);
+  }, [filters, fetchTests]);
 
   const getTestTypeColor = (testType: string) => {
     switch (testType) {
@@ -112,28 +117,34 @@ const TestsPage = () => {
             <Button
               variant={filters.testType === "" ? "default" : "outline"}
               size="sm"
-              onClick={() => setFilters({ testType: "" })}
+              onClick={() => setFilters((prev) => ({ ...prev, testType: "" }))}
             >
               All Tests
             </Button>
             <Button
               variant={filters.testType === "60_30" ? "default" : "outline"}
               size="sm"
-              onClick={() => setFilters({ testType: "60_30" })}
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, testType: "60_30" }))
+              }
             >
               Super Solo (60s/30s)
             </Button>
             <Button
               variant={filters.testType === "30_30" ? "default" : "outline"}
               size="sm"
-              onClick={() => setFilters({ testType: "30_30" })}
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, testType: "30_30" }))
+              }
             >
               Juniors Solo (30s/30s)
             </Button>
             <Button
               variant={filters.testType === "30_60" ? "default" : "outline"}
               size="sm"
-              onClick={() => setFilters({ testType: "30_60" })}
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, testType: "30_60" }))
+              }
             >
               Speed Solo (30s/60s)
             </Button>
