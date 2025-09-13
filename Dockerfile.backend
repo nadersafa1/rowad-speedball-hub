@@ -8,8 +8,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY apps/backend/package*.json ./apps/backend/
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci
 
 # Copy backend source
 COPY apps/backend ./apps/backend
@@ -31,9 +31,9 @@ RUN adduser -S backend -u 1001
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files and install production dependencies only
 COPY --from=builder /app/apps/backend/package*.json ./
-COPY --from=builder /app/apps/backend/node_modules ./node_modules
+RUN npm install --only=production && npm cache clean --force
 
 # Copy built application
 COPY --from=builder /app/apps/backend/dist ./dist
