@@ -56,7 +56,7 @@ if curl -f http://localhost:8000/api/health > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Backend is healthy${NC}"
 else
     echo -e "${RED}❌ Backend health check failed${NC}"
-    docker-compose logs backend
+    docker compose logs backend
     exit 1
 fi
 
