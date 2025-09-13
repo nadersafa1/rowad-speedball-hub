@@ -38,6 +38,7 @@ RUN npm install --only=production && npm cache clean --force
 # Copy built application
 COPY --from=builder /app/apps/backend/dist ./dist
 COPY --from=builder /app/apps/backend/drizzle ./drizzle
+COPY --from=builder /app/apps/backend/drizzle.config.ts ./drizzle.config.ts
 
 # Change ownership
 RUN chown -R backend:nodejs /app
