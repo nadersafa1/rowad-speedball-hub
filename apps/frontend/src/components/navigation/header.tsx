@@ -25,25 +25,19 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-sm border-b">
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
+      <nav className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8" aria-label="Top">
         <div className="flex w-full items-center justify-between py-4">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-3">
-              <Image
-                src="/logo.png"
-                alt="Rowad Club"
-                width={40}
-                height={40}
-                className="h-10 w-10"
-              />
+            <Link href="/" className="flex items-center">
+              <Image src="/logo.png" alt="Rowad Club" width={60} height={60} />
               <div className="hidden sm:block">
                 <Image
                   src="/logo-text.png"
                   alt="Rowad Speedball Team"
-                  width={160}
-                  height={24}
-                  className="h-6"
+                  width={120}
+                  height={20}
+                  // className="h-6"
                 />
               </div>
               <div className="sm:hidden">
