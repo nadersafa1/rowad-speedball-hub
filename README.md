@@ -213,26 +213,59 @@ GET    /api/auth/verify          // Verify admin session
 ### Admin Pages
 - **Admin Dashboard** (`/admin`): Administrative interface for data management
 
-## 🚢 Deployment
+## 🚢 Production Deployment
 
-### Production Environment Variables
+### 🚀 **READY FOR VPS DEPLOYMENT!**
 
-Create a `.env` file with the following variables:
+**Complete production setup with Docker, Nginx, SSL, and automated deployment scripts.**
+
+### Quick Deploy to VPS
 
 ```bash
-DATABASE_URL=postgresql://postgres:secure_password@database:5432/speedball_hub
-SESSION_SECRET=your-secure-session-secret
-DB_PASSWORD=secure_password_change_me
-NODE_ENV=production
+# 1. Clone repository on your VPS
+git clone <repository-url>
+cd rowad-speedball-hub
+
+# 2. Configure environment
+cp env.production.example .env
+nano .env  # Update with your secure values
+
+# 3. Deploy with one command
+./deploy.sh
+
+# 4. Setup SSL certificates
+./ssl-setup.sh
 ```
 
-### Domain Configuration
+### 📋 **Deployment Files Included:**
+- ✅ `docker-compose.yml` - Production Docker configuration
+- ✅ `Dockerfile.backend` & `Dockerfile.frontend` - Optimized production builds
+- ✅ `nginx.conf` - Nginx reverse proxy with SSL and security
+- ✅ `deploy.sh` - Automated deployment script
+- ✅ `ssl-setup.sh` - SSL certificate setup script
+- ✅ `DEPLOYMENT.md` - Complete deployment guide
+- ✅ `DEPLOYMENT-CHECKLIST.md` - Step-by-step checklist
 
-The application is configured for deployment at `rowad.speedballhub.com`.
+### 🌐 **Production Features:**
+- ✅ **SSL/HTTPS**: Automatic Let's Encrypt certificates
+- ✅ **Security**: Rate limiting, security headers, firewall ready
+- ✅ **Performance**: Gzip compression, static caching, optimized builds
+- ✅ **Monitoring**: Health checks, logging, error handling
+- ✅ **Scalability**: Separate frontend/backend containers
 
-### SSL Configuration
+### 🎯 **Production URL:**
+**https://rowad.speedballhub.com**
 
-SSL certificates are automatically managed by Certbot for the production domain.
+### 📖 **Deployment Documentation:**
+- **Quick Start**: See `DEPLOYMENT-CHECKLIST.md`
+- **Detailed Guide**: See `DEPLOYMENT.md`
+- **Troubleshooting**: Included in deployment docs
+
+### ⚙️ **VPS Requirements:**
+- Ubuntu 20.04+ or CentOS 8+
+- 2GB RAM minimum (4GB recommended)
+- Docker & Docker Compose
+- Domain pointing to VPS IP
 
 ## 🧪 Testing
 

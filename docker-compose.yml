@@ -64,9 +64,9 @@ services:
     volumes:
       - certbot_data:/var/www/certbot
       - ./ssl:/etc/letsencrypt
-    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@rowad.com --agree-tos --no-eff-email --force-renewal -d rowad.speedballhub.com
-    depends_on:
-      - nginx
+    # Certbot will be run manually via ssl-setup.sh script
+    # This service is here for volume management
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 12h & wait $${!}; done;'"
 
 volumes:
   postgres_data:
