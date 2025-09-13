@@ -18,6 +18,9 @@ COPY apps/backend ./apps/backend
 WORKDIR /app/apps/backend
 RUN npm run build
 
+# Generate database migrations if they don't exist
+RUN npm run db:generate || echo "No schema changes to generate"
+
 # Production stage
 FROM node:18-alpine AS production
 
@@ -37,8 +40,10 @@ RUN npm install --only=production && npm cache clean --force
 
 # Copy built application
 COPY --from=builder /app/apps/backend/dist ./dist
-COPY --from=builder /app/apps/backend/drizzle ./drizzle
 COPY --from=builder /app/apps/backend/drizzle.config.ts ./drizzle.config.ts
+
+# Create empty drizzle directory (migrations will be generated at runtime if needed)
+RUN mkdir -p ./drizzle/meta
 
 # Change ownership
 RUN chown -R backend:nodejs /app

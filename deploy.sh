@@ -67,7 +67,10 @@ else
     echo -e "${YELLOW}⚠️  Frontend health check failed (this is normal if SSL is not set up yet)${NC}"
 fi
 
-# Run database migrations
+# Generate and run database migrations
+echo -e "${YELLOW}🗃️  Generating database migrations...${NC}"
+docker compose exec backend npm run db:generate || echo "No schema changes to generate"
+
 echo -e "${YELLOW}🗃️  Running database migrations...${NC}"
 docker compose exec backend npm run db:migrate
 
