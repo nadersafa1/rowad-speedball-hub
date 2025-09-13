@@ -51,12 +51,15 @@ sleep 30
 # Check if services are healthy
 echo -e "${YELLOW}🔍 Checking service health...${NC}"
 
-# Check backend health
-if curl -f http://localhost:8000/api/health > /dev/null 2>&1; then
+# Check backend health through nginx proxy
+if curl -f http://localhost/api/health > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Backend is healthy${NC}"
 else
     echo -e "${RED}❌ Backend health check failed${NC}"
-    docker compose logs backend
+    echo -e "${YELLOW}🔍 Trying direct container access...${NC}"
+    docker compose exec backend curl -f http://localhost:5000/health 2>/dev/null || echo "Direct container access also failed"
+    echo -e "${YELLOW}📋 Backend logs:${NC}"
+    docker compose logs backend --tail=20
     exit 1
 fi
 

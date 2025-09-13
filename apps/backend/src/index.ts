@@ -8,13 +8,13 @@ import { config } from 'dotenv';
 import bcrypt from 'bcryptjs';
 import { db } from './db/connection';
 import { players, tests, testResults, calculateAge, getAgeGroup, calculateTotalScore } from './db/schema';
-import { eq, desc, and, like, gte, lte } from 'drizzle-orm';
+import { eq, desc, and, like, gte, lte, sql } from 'drizzle-orm';
 
 // Load environment variables
 config();
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5000;
 
 // Security middleware
 app.use(helmet({
@@ -63,19 +63,33 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
-
-// Health check endpoint
+// Health check endpoint - simple version that doesn't require DB
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Detailed health check endpoint
+app.get('/api/health', async (req, res) => {
+  try {
+    // Test database connection
+    await db.execute(sql`SELECT 1`);
+    res.status(200).json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || 'development',
+      database: 'connected'
+    });
+  } catch (error) {
+    res.status(503).json({ 
+      status: 'unhealthy', 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || 'development',
+      database: 'disconnected',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
 });
 
 // Admin credentials
