@@ -15,7 +15,6 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: Home },
   { name: "Players", href: "/players", icon: Users },
   { name: "Tests", href: "/tests", icon: Trophy },
-  { name: "Analytics", href: "/analytics", icon: BarChart3 },
 ];
 
 const Header = () => {

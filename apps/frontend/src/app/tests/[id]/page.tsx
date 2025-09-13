@@ -11,6 +11,7 @@ import {
   Filter,
   Clock,
   Plus,
+  Edit,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useTestsStore } from "@/store/tests-store";
 import { useAuthStore } from "@/store/auth-store";
 import ResultsForm from "@/components/results/results-form";
+import TestForm from "@/components/tests/test-form";
 
 const TestDetailPage = () => {
   const params = useParams();
@@ -31,6 +33,7 @@ const TestDetailPage = () => {
   const { user } = useAuthStore();
   const { selectedTest, fetchTest, isLoading } = useTestsStore();
   const [resultFormOpen, setResultFormOpen] = useState(false);
+  const [editTestFormOpen, setEditTestFormOpen] = useState(false);
   const [filters, setFilters] = useState({
     ageGroup: "",
     gender: "",
@@ -58,11 +61,11 @@ const TestDetailPage = () => {
   const getTestTypeLabel = (testType: string) => {
     switch (testType) {
       case "60_30":
-        return "Type A (60s Play / 30s Rest)";
+        return "Super Solo (60s/30s)";
       case "30_30":
-        return "Type B (30s Play / 30s Rest)";
+        return "Juniors Solo (30s/30s)";
       case "30_60":
-        return "Type C (30s Play / 60s Rest)";
+        return "Speed Solo (30s/60s)";
       default:
         return testType;
     }
@@ -152,17 +155,42 @@ const TestDetailPage = () => {
                 <Trophy className="h-12 w-12 text-blue-600" />
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-3xl font-bold text-gray-900">
-                    {selectedTest.name}
-                  </h1>
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${getTestTypeColor(
-                      selectedTest.testType
-                    )}`}
-                  >
-                    {getTestTypeLabel(selectedTest.testType)}
-                  </span>
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-gray-900">
+                      {selectedTest.name}
+                    </h1>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${getTestTypeColor(
+                        selectedTest.testType
+                      )}`}
+                    >
+                      {getTestTypeLabel(selectedTest.testType)}
+                    </span>
+                  </div>
+                  {user && (
+                    <Dialog
+                      open={editTestFormOpen}
+                      onOpenChange={setEditTestFormOpen}
+                    >
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="gap-2">
+                          <Edit className="h-4 w-4" />
+                          Edit Test
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-2xl">
+                        <TestForm
+                          test={selectedTest}
+                          onSuccess={() => {
+                            setEditTestFormOpen(false);
+                            fetchTest(testId, true);
+                          }}
+                          onCancel={() => setEditTestFormOpen(false)}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-4">
                   <div className="flex items-center gap-2">

@@ -154,13 +154,15 @@ const PlayersPage = () => {
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rowad-500 focus:border-transparent"
                 >
                   <option value="">All Age Groups</option>
-                  <option value="U10">U10</option>
-                  <option value="U12">U12</option>
-                  <option value="U14">U14</option>
-                  <option value="U16">U16</option>
-                  <option value="U18">U18</option>
-                  <option value="U21">U21</option>
-                  <option value="Senior">Senior</option>
+                  <option value="Mini">Mini (U-07)</option>
+                  <option value="U-09">U-09</option>
+                  <option value="U-11">U-11</option>
+                  <option value="U-13">U-13</option>
+                  <option value="U-15">U-15</option>
+                  <option value="U-17">U-17</option>
+                  <option value="U-19">U-19</option>
+                  <option value="U-21">U-21</option>
+                  <option value="Seniors">Seniors</option>
                 </select>
               </div>
             </div>

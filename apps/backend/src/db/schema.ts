@@ -94,13 +94,15 @@ export const calculateAge = (dateOfBirth: string): number => {
 export const getAgeGroup = (dateOfBirth: string): string => {
   const age = calculateAge(dateOfBirth);
   
-  if (age < 10) return 'U10';
-  if (age < 12) return 'U12';
-  if (age < 14) return 'U14';
-  if (age < 16) return 'U16';
-  if (age < 18) return 'U18';
-  if (age < 21) return 'U21';
-  return 'Senior';
+  if (age < 7) return 'Mini';
+  if (age < 9) return 'U-09';
+  if (age < 11) return 'U-11';
+  if (age < 13) return 'U-13';
+  if (age < 15) return 'U-15';
+  if (age < 17) return 'U-17';
+  if (age < 19) return 'U-19';
+  if (age < 21) return 'U-21';
+  return 'Seniors';
 };
 
 export const calculateTotalScore = (result: Pick<TestResult, 'leftHandScore' | 'rightHandScore' | 'forehandScore' | 'backhandScore'>): number => {

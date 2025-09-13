@@ -11,6 +11,7 @@ import {
   Trophy,
   BarChart3,
   Plus,
+  Edit,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { usePlayersStore } from "@/store/players-store";
 import { useAuthStore } from "@/store/auth-store";
 import ResultsForm from "@/components/results/results-form";
+import PlayerForm from "@/components/players/player-form";
 
 const PlayerDetailPage = () => {
   const params = useParams();
@@ -31,6 +33,7 @@ const PlayerDetailPage = () => {
   const { user } = useAuthStore();
   const { selectedPlayer, fetchPlayer, isLoading } = usePlayersStore();
   const [resultFormOpen, setResultFormOpen] = useState(false);
+  const [editPlayerFormOpen, setEditPlayerFormOpen] = useState(false);
 
   useEffect(() => {
     if (playerId) {
@@ -93,9 +96,34 @@ const PlayerDetailPage = () => {
                 <User className="h-12 w-12 text-rowad-600" />
               </div>
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  {selectedPlayer.name}
-                </h1>
+                <div className="flex justify-between items-start mb-2">
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    {selectedPlayer.name}
+                  </h1>
+                  {user && (
+                    <Dialog
+                      open={editPlayerFormOpen}
+                      onOpenChange={setEditPlayerFormOpen}
+                    >
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="gap-2">
+                          <Edit className="h-4 w-4" />
+                          Edit Player
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-2xl">
+                        <PlayerForm
+                          player={selectedPlayer}
+                          onSuccess={() => {
+                            setEditPlayerFormOpen(false);
+                            fetchPlayer(playerId);
+                          }}
+                          onCancel={() => setEditPlayerFormOpen(false)}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />

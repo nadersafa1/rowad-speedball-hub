@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "tsx watch src/index.simple.ts",
-    "build": "tsc src/index.simple.ts --outDir dist --target ES2022 --module commonjs --strict --esModuleInterop --skipLibCheck --forceConsistentCasingInFileNames --resolveJsonModule",
-    "start": "node dist/index.simple.js",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc src/index.ts --outDir dist --target ES2022 --module commonjs --strict --esModuleInterop --skipLibCheck --forceConsistentCasingInFileNames --resolveJsonModule",
+    "start": "node dist/index.js",
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
     "db:generate": "drizzle-kit generate:pg",
