@@ -37,7 +37,6 @@ const Header = () => {
                   alt="Rowad Speedball Team"
                   width={120}
                   height={20}
-                  // className="h-6"
                 />
               </div>
               <div className="sm:hidden">

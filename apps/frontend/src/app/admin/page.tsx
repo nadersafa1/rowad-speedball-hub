@@ -18,10 +18,11 @@ import { useTestsStore } from "@/store/tests-store";
 import PlayerForm from "@/components/players/player-form";
 import TestForm from "@/components/tests/test-form";
 import ResultsForm from "@/components/results/results-form";
+import LoginForm from "@/components/auth/login-form";
 
 const AdminDashboard = () => {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated, isLoading, checkAuth } = useAuthStore();
   const {
     players,
     fetchPlayers,
@@ -43,32 +44,46 @@ const AdminDashboard = () => {
   const [editingResult, setEditingResult] = useState<any>(null);
 
   useEffect(() => {
-    // Redirect if not authenticated
-    if (!user) {
-      router.push("/");
-      return;
+    // Check authentication status on page load
+    checkAuth();
+  }, [checkAuth]);
+
+  useEffect(() => {
+    // Fetch data only when authenticated
+    if (isAuthenticated && user) {
+      fetchPlayers();
+      fetchTests();
     }
+  }, [isAuthenticated, user, fetchPlayers, fetchTests]);
 
-    // Fetch data
-    fetchPlayers();
-    fetchTests();
-  }, [user, router, fetchPlayers, fetchTests]);
-
-  // Redirect if not authenticated
-  if (!user) {
+  // Show loading state while checking authentication
+  if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <Card>
-          <CardContent className="pt-6 text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Access Denied
-            </h1>
-            <p className="text-gray-600 mb-4">
-              You need to be logged in as an admin to access this page.
-            </p>
-            <Button onClick={() => router.push("/")}>Go to Homepage</Button>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rowad-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login form if not authenticated
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-md mx-auto">
+          <LoginForm
+            onSuccess={() => {
+              // After successful login, the auth state will update and this component will re-render
+              // showing the admin dashboard
+            }}
+          />
+          <div className="mt-6 text-center">
+            <Button variant="outline" onClick={() => router.push("/")}>
+              ← Back to Homepage
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }

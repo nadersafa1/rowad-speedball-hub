@@ -173,21 +173,6 @@ const LoginForm = ({ onSuccess, onCancel }: LoginFormProps) => {
             </div>
           </form>
         </Form>
-
-        {/* Demo Credentials */}
-        <div className="mt-6 p-4 bg-muted rounded-lg">
-          <p className="text-sm font-medium text-muted-foreground mb-2">
-            Demo Credentials:
-          </p>
-          <div className="text-xs space-y-1">
-            <p>
-              <strong>Email:</strong> admin@rowad.com
-            </p>
-            <p>
-              <strong>Password:</strong> Test@1234
-            </p>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );
