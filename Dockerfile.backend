@@ -42,8 +42,8 @@ RUN npm install --only=production && npm cache clean --force
 COPY --from=builder /app/apps/backend/dist ./dist
 COPY --from=builder /app/apps/backend/drizzle.config.ts ./drizzle.config.ts
 
-# Create empty drizzle directory (migrations will be generated at runtime if needed)
-RUN mkdir -p ./drizzle/meta
+# Copy generated migrations from builder stage
+COPY --from=builder /app/apps/backend/drizzle ./drizzle
 
 # Change ownership
 RUN chown -R backend:nodejs /app
