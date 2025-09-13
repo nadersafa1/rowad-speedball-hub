@@ -59,7 +59,7 @@ EOF
 
 # Stop existing nginx if running
 echo -e "${YELLOW}🛑 Stopping existing nginx...${NC}"
-docker-compose stop nginx || true
+docker compose stop nginx || true
 
 # Start nginx with temporary config
 echo -e "${YELLOW}🚀 Starting nginx with temporary configuration...${NC}"
@@ -97,7 +97,7 @@ rm nginx-temp.conf
 
 # Start the full application
 echo -e "${YELLOW}🚀 Starting full application with SSL...${NC}"
-docker-compose up -d
+docker compose up -d
 
 # Wait for services to start
 sleep 10
@@ -109,7 +109,7 @@ if curl -f -k https://$DOMAIN > /dev/null 2>&1; then
     echo -e "${GREEN}🌐 Your application is now available at: https://$DOMAIN${NC}"
 else
     echo -e "${RED}❌ SSL test failed. Check the logs:${NC}"
-    docker-compose logs nginx
+    docker compose logs nginx
     exit 1
 fi
 
@@ -124,7 +124,7 @@ docker run --rm \
     certbot/certbot renew --quiet
 
 # Reload nginx to use new certificates
-docker-compose exec nginx nginx -s reload
+docker compose exec nginx nginx -s reload
 EOF
 
 chmod +x ssl-renew.sh

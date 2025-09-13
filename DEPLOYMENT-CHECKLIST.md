@@ -40,6 +40,8 @@ sudo usermod -aG docker $USER
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
+# Note: Modern Docker includes compose as a plugin, so you can use 'docker compose' instead of 'docker-compose'
+
 # Install Git
 sudo apt install git -y
 
@@ -97,7 +99,7 @@ sudo ufw --force enable
 ### **6. Verify Deployment** ✅
 ```bash
 # Check services
-docker-compose ps
+docker compose ps
 
 # Test endpoints
 curl https://rowad.speedballhub.com/api/health
@@ -157,16 +159,16 @@ nslookup rowad.speedballhub.com
 ### **Logging:**
 ```bash
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # View specific service logs
-docker-compose logs -f [backend|frontend|nginx|database]
+docker compose logs -f [backend|frontend|nginx|database]
 ```
 
 ### **Backups:**
 ```bash
 # Database backup
-docker-compose exec -T database pg_dump -U postgres speedball_hub > backup_$(date +%Y%m%d).sql
+docker compose exec -T database pg_dump -U postgres speedball_hub > backup_$(date +%Y%m%d).sql
 ```
 
 ### **Updates:**
@@ -217,7 +219,7 @@ nslookup rowad.speedballhub.com
 **2. Services Won't Start:**
 ```bash
 # Check logs
-docker-compose logs -f
+docker compose logs -f
 
 # Check environment variables
 cat .env
@@ -226,10 +228,10 @@ cat .env
 **3. Database Connection Issues:**
 ```bash
 # Check database logs
-docker-compose logs database
+docker compose logs database
 
 # Restart database
-docker-compose restart database
+docker compose restart database
 ```
 
 **4. Permission Denied:**
@@ -258,7 +260,7 @@ Before asking for help, verify:
 ## 🎯 **SUCCESS METRICS:**
 
 ### **Your deployment is successful when:**
-- ✅ All Docker containers are running
+- ✅ All Docker containers are running (`docker compose ps`)
 - ✅ HTTPS certificate is valid
 - ✅ Website loads at https://rowad.speedballhub.com
 - ✅ Admin login works

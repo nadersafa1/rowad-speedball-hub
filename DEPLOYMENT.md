@@ -37,6 +37,8 @@ sudo usermod -aG docker $USER
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
+# Note: Modern Docker includes compose as a plugin, so you can use 'docker compose' instead of 'docker-compose'
+
 # Install Git
 sudo apt install git -y
 
@@ -179,13 +181,13 @@ crontab -e
 ### Check Service Status
 ```bash
 # View running containers
-docker-compose ps
+docker compose ps
 
 # Check resource usage
 docker stats
 
 # View logs
-docker-compose logs -f [service_name]
+docker compose logs -f [service_name]
 ```
 
 ### Update Application
@@ -200,13 +202,13 @@ git pull origin main
 ### Database Operations
 ```bash
 # Access database
-docker-compose exec database psql -U postgres -d speedball_hub
+docker compose exec database psql -U postgres -d speedball_hub
 
 # Run migrations
-docker-compose exec backend npm run db:migrate
+docker compose exec backend npm run db:migrate
 
 # Seed database (if needed)
-docker-compose exec backend npm run db:seed
+docker compose exec backend npm run db:seed
 ```
 
 ## 🔍 Troubleshooting
@@ -216,7 +218,7 @@ docker-compose exec backend npm run db:seed
 **1. SSL Certificate Issues**
 ```bash
 # Check certificate status
-docker-compose exec nginx nginx -t
+docker compose exec nginx nginx -t
 
 # Renew certificates manually
 ./ssl-renew.sh
@@ -228,22 +230,22 @@ openssl x509 -in ssl/live/rowad.speedballhub.com/cert.pem -text -noout | grep "N
 **2. Database Connection Issues**
 ```bash
 # Check database logs
-docker-compose logs database
+docker compose logs database
 
 # Test database connection
-docker-compose exec backend npm run db:test
+docker compose exec backend npm run db:test
 ```
 
 **3. Service Not Starting**
 ```bash
 # Check specific service logs
-docker-compose logs [service_name]
+docker compose logs [service_name]
 
 # Restart specific service
-docker-compose restart [service_name]
+docker compose restart [service_name]
 
 # Rebuild and restart
-docker-compose up --build -d [service_name]
+docker compose up --build -d [service_name]
 ```
 
 **4. Domain/DNS Issues**
@@ -291,7 +293,7 @@ docker system prune -f  # Clean up unused resources
 
 If you encounter issues:
 
-1. Check the logs: `docker-compose logs -f`
+1. Check the logs: `docker compose logs -f`
 2. Verify environment variables in `.env`
 3. Ensure domain DNS is properly configured
 4. Check firewall settings

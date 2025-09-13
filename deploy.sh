@@ -34,15 +34,15 @@ echo -e "${GREEN}✅ Environment variables validated${NC}"
 
 # Stop existing containers
 echo -e "${YELLOW}🛑 Stopping existing containers...${NC}"
-docker-compose down
+docker compose down
 
 # Remove old images (optional - uncomment if you want to force rebuild)
 # echo -e "${YELLOW}🗑️  Removing old images...${NC}"
-# docker-compose down --rmi all
+# docker compose down --rmi all
 
 # Build and start services
 echo -e "${YELLOW}🏗️  Building and starting services...${NC}"
-docker-compose up --build -d
+docker compose up --build -d
 
 # Wait for services to be ready
 echo -e "${YELLOW}⏳ Waiting for services to be ready...${NC}"
@@ -69,11 +69,11 @@ fi
 
 # Run database migrations
 echo -e "${YELLOW}🗃️  Running database migrations...${NC}"
-docker-compose exec backend npm run db:migrate
+docker compose exec backend npm run db:migrate
 
 # Optional: Seed database (uncomment if needed)
 # echo -e "${YELLOW}🌱 Seeding database...${NC}"
-# docker-compose exec backend npm run db:seed
+# docker compose exec backend npm run db:seed
 
 echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
 echo -e "${GREEN}🌐 Your application should be available at: https://${DOMAIN}${NC}"
