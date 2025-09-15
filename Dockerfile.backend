@@ -17,8 +17,9 @@ COPY apps/backend ./apps/backend
 WORKDIR /app/apps/backend
 RUN npm run build
 
-# Drizzle migrations should already be copied with the backend code above
-# But let's ensure they're accessible in the working directory
+# Ensure drizzle migrations are accessible (they should be copied with the backend code)
+# Let's verify the structure
+RUN ls -la && ls -la drizzle/ && ls -la drizzle/meta/
 
 # Create startup script for migrations and app startup
 RUN echo '#!/bin/sh' > /app/start.sh && \
@@ -27,6 +28,11 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'sleep 5' >> /app/start.sh && \
     echo 'echo "🔄 Running database migrations..."' >> /app/start.sh && \
     echo 'cd /app/apps/backend' >> /app/start.sh && \
+    echo 'echo "Current directory: $(pwd)"' >> /app/start.sh && \
+    echo 'echo "Drizzle folder contents:"' >> /app/start.sh && \
+    echo 'ls -la drizzle/ || echo "Drizzle folder not found"' >> /app/start.sh && \
+    echo 'echo "Meta folder contents:"' >> /app/start.sh && \
+    echo 'ls -la drizzle/meta/ || echo "Meta folder not found"' >> /app/start.sh && \
     echo 'npm run db:migrate' >> /app/start.sh && \
     echo 'echo "✅ Starting application..."' >> /app/start.sh && \
     echo 'npm start' >> /app/start.sh && \
