@@ -2,8 +2,9 @@
 export class ApiClient {
   private baseUrl: string;
 
-  constructor(baseUrl: string = '/api') {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl?: string) {
+    // Use environment variable if available, otherwise fall back to provided baseUrl or '/api'
+    this.baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || baseUrl || '/api';
   }
 
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -175,5 +176,9 @@ export class ApiClient {
   }
 }
 
-// Singleton instance
-export const apiClient = new ApiClient();
+// Singleton instance - provide fallback URL for development
+const defaultApiUrl = process.env.NODE_ENV === 'production' 
+  ? '/api'  // In production, use relative path (proxy through nginx or direct backend)
+  : 'http://localhost:2001/api';
+
+export const apiClient = new ApiClient(defaultApiUrl);

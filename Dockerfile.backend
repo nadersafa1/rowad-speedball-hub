@@ -1,61 +1,39 @@
-# Production Dockerfile for Backend
-FROM node:18-alpine AS builder
+# Use the official Node.js image as the base image
+FROM node:22-alpine
 
-# Set working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package files
+# Copy package.json and package-lock.json (or yarn.lock) to the container
 COPY package*.json ./
 COPY apps/backend/package*.json ./apps/backend/
+# Install dependencies
+RUN npm install
 
-# Install all dependencies (including dev dependencies for build)
-RUN npm ci
-
-# Copy backend source
+# Copy the rest of your application code to the container
 COPY apps/backend ./apps/backend
 
-# Build backend
+# Build the TypeScript application
 WORKDIR /app/apps/backend
 RUN npm run build
 
-# Generate database migrations if they don't exist
-RUN npm run db:generate || echo "No schema changes to generate"
+# Drizzle migrations should already be copied with the backend code above
+# But let's ensure they're accessible in the working directory
 
-# Production stage
-FROM node:18-alpine AS production
+# Create startup script for migrations and app startup
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'set -e' >> /app/start.sh && \
+    echo 'echo "🔄 Waiting for database to be ready..."' >> /app/start.sh && \
+    echo 'sleep 5' >> /app/start.sh && \
+    echo 'echo "🔄 Running database migrations..."' >> /app/start.sh && \
+    echo 'cd /app/apps/backend' >> /app/start.sh && \
+    echo 'npm run db:migrate' >> /app/start.sh && \
+    echo 'echo "✅ Starting application..."' >> /app/start.sh && \
+    echo 'npm start' >> /app/start.sh && \
+    chmod +x /app/start.sh
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Expose the port your app runs on
+EXPOSE 5555
 
-# Create app user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S backend -u 1001
-
-# Set working directory
-WORKDIR /app
-
-# Copy package files and install production dependencies only
-COPY --from=builder /app/apps/backend/package*.json ./
-RUN npm install --only=production && npm cache clean --force
-
-# Copy built application
-COPY --from=builder /app/apps/backend/dist ./dist
-COPY --from=builder /app/apps/backend/drizzle.config.ts ./drizzle.config.ts
-
-# Copy generated migrations from builder stage
-COPY --from=builder /app/apps/backend/drizzle ./drizzle
-
-# Change ownership
-RUN chown -R backend:nodejs /app
-USER backend
-
-# Expose port
-EXPOSE 5000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:5000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
-
-# Start application
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "dist/index.js"]
+# Command to start your application
+CMD ["/app/start.sh"]

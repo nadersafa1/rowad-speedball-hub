@@ -14,7 +14,7 @@ import { eq, desc, and, like, gte, lte, sql } from 'drizzle-orm';
 config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5555;
 
 // Security middleware
 app.use(helmet({
@@ -31,8 +31,8 @@ app.use(helmet({
 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://rowad.speedballhub.com', 'http://localhost:3000','http://rowad.speedballhub.com']
-    : ['http://localhost:3000'],
+    ? ['https://rowad.speedballhub.com', 'http://rowad.speedballhub.com', 'http://localhost:3001', 'http://frontend:3000']
+    : ['http://localhost:3000', 'http://localhost:3001'],
   credentials: true,
 }));
 
